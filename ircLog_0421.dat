@@ -1,0 +1,222 @@
+(01:41:12 PM) acrowell105: Hi Doug
+(01:41:41 PM) dpfeil: Hi Andrew, I was hoping I was in the right place
+(01:41:47 PM) acrowell105: I'm one of the students working with Hristo. He and the other student, Anne, are working on getting connected
+(01:41:56 PM) dpfeil: ok, sounds good, thanks
+(01:42:15 PM) ecks [n=ecks@dhcp-arubawireless-209-15.rowan.edu] entered the room.
+(01:42:40 PM) ecks: hello, I'm Hristo
+(01:42:45 PM) ecks is now known as hasenov
+(01:42:48 PM) dpfeil: <--- Doug
+(01:43:08 PM) dpfeil: This is a blast from the past for me, I have not used mIRC in a very long time
+(01:44:02 PM) acrowell105: Anne's still working on connecting
+(01:44:26 PM) dpfeil: ok
+(01:44:44 PM) anne [n=df@dhcp-arubawireless-214-94.rowan.edu] entered the room.
+(01:44:47 PM) acrowell105: mIRC seems complicated. Pidgin was easy
+(01:44:54 PM) acrowell105: alright, we're all here
+(01:45:05 PM) dpfeil: yes
+(01:45:07 PM) anne: never used any of these two
+(01:45:39 PM) hasenov: so, we were able to get click working for regular ad-hoc network intercommunication
+(01:45:59 PM) dpfeil: using a regular wifi card?
+(01:46:02 PM) acrowell105: yes
+(01:46:08 PM) hasenov: and based on your email, we understood that it is running dsdv
+(01:46:22 PM) acrowell105: that the WARP board is running DSDV
+(01:46:37 PM) acrowell105: is that correct?
+(01:46:55 PM) dpfeil: yes, one of our students, John, has implemented DSDV on the WARP boards
+(01:46:59 PM) hasenov: right, so we need to find out how hard it is to interface our code with the warp board's code
+(01:47:18 PM) dpfeil: well, lets step back for a moment
+(01:47:37 PM) acrowell105: okay, well you referred us to the repository for the default WARP board code. Is there a repository for the code you have, currently?
+(01:47:45 PM) dpfeil: I just want to make sure I understand the goals and what the final functionality we are interested it
+(01:47:46 PM) dpfeil: in
+(01:48:20 PM) hasenov: the way we have it planned so far is that there is an existing ethernet communication with the PC and the WARP board
+(01:48:28 PM) dpfeil: yes
+(01:49:05 PM) hasenov: so the PC is running CLICK, and it is sending a "control" packet, which the WARP board needs to filter and broadcast to the rest of the network
+(01:49:16 PM) hasenov: *not broadcast to rest of network
+(01:50:04 PM) hasenov: based on the body inside the packet, there would be some control info, such as "change modulation", etc..
+(01:50:42 PM) dpfeil: ok, so the real goal is to have some coordination and communication between upper layers running on the PC and the lower levels (routing, mac, phy) running on the WARP board
+(01:51:23 PM) hasenov: yes
+(01:51:25 PM) dpfeil: ok
+(01:52:20 PM) dpfeil: right, so the way we plan to do that is what you just said:
+(01:52:43 PM) hasenov: so for right now, we are able to create our own packets using click, and then for some other PC to receive them
+(01:53:29 PM) hasenov: and this is all occuring at the network layer, by the way
+(01:53:34 PM) dpfeil: ok, so that is good, you can use that mechanism for creating the control packets
+(01:53:55 PM) dpfeil: right?
+(01:54:33 PM) hasenov: CLICK has the capability to modify frames at the data link layer, however you already have network layer setup
+(01:55:09 PM) dpfeil: I am not sure what that means for us
+(01:55:19 PM) acrowell105: right. We're currently using an implementation of DSDV in click to communicate. There's an octet that click uses to determine if the packet is a route broadcast or a data packet. In our implementation we planned on extending that to add yet another type of packet : "control packet"
+(01:56:14 PM) dpfeil: right, that makes sense
+(01:58:44 PM) hasenov: so we have a question, what network protocol is running on the ethernet interface of the WARP board, is it IP?
+(01:59:31 PM) dpfeil: so, basically, the WARP nodes act as an ethernet bridge, completely transparent to the ethernet.
+(01:59:34 PM) dpfeil: what happens is:
+(02:02:27 PM) dpfeil: warp node receives a packet from the ethernet and can do any sort of filtering based on the packet, once it gets all of the information it needs from the IP Packets (destination and such), the WARP node performs the Routing, MAC and PHY protocols as if the IP Packet was just raw DATA
+(02:02:44 PM) dpfeil: on the receiver, it takes the WARP data payload, and takes the IP packet out of it for processing
+(02:05:19 PM) hasenov: ok good, that means that you are actually looking at the header at the network layer, and not just the destination MAC address
+(02:05:35 PM) dpfeil: right, correct
+(02:06:10 PM) dpfeil: so I think we want 2 new packet types
+(02:06:31 PM) dpfeil: one for communication from the network layer to warp, setting up the PHY parameters
+(02:07:08 PM) dpfeil: and one for communicating from the warp nodes to the network layer with useful information such as channel measurements, and things like that
+(02:08:23 PM) hasenov: so as Andrew asked earlier, do you have any repository or such where we could check out the current code?
+(02:09:12 PM) dpfeil: Currently the code on the reposity you were referring to was the actual code developed by Rice University
+(02:09:32 PM) dpfeil: We have our own version of the code with a bunch of changes we have made, but it is not in a repository
+(02:10:17 PM) dpfeil: We can make it available to you through remote desktop
+(02:10:43 PM) dpfeil: I will look into setting up a repository for this as well, it might not be a bad idea.
+(02:11:59 PM) dpfeil: as far as accessing the hardware, what would be most useful to you?
+(02:13:03 PM) hasenov: the most useful way to access the hardware?
+(02:13:15 PM) dpfeil: yes
+(02:13:31 PM) dpfeil: as I said in a previous email, you are welcome to schedule some time to come to Drexel's Campus and use it
+(02:13:53 PM) dpfeil: or we can coordinate a specific remote desktop set up that will enable you to program the nodes and use them from rowan
+(02:15:09 PM) hasenov: idk, we have about two weeks left for the semester
+(02:15:30 PM) dpfeil: ah ok, what are the plans for the project after the semester ends?
+(02:16:43 PM) hasenov: so physically going there would be tough, remote desktop would be much easier
+(02:17:14 PM) acrowell105: our plans, currently, are to implement what we can during the semester. From there, I'm not sure what Dr. Shetty has planned
+(02:17:45 PM) dpfeil: ok, well we can definitely work that out using remote desktop. It is going to take some coordination with some other students at Drexel though.
+(02:18:10 PM) dpfeil: For testing out your code, you would need two nodes, correct?
+(02:18:30 PM) dpfeil: so you can send and receive packets from one pc to another over WARP
+(02:18:46 PM) acrowell105: We really only need one. Since we're testing communication between PC and WARP
+(02:18:55 PM) dpfeil: ok, that works
+(02:19:13 PM) acrowell105: The only reason we'd need two is to make sure it's not sending out the packets it's not supposed to
+(02:19:45 PM) dpfeil: that should not be a problem if you need it at some point, though it makes sense to start with just 1 I guess.
+(02:19:59 PM) hasenov: however, those are tests to do at the end
+(02:20:05 PM) dpfeil: yes
+(02:21:42 PM) acrowell105: Still, we're not 100% sure we'll have a working implementation at the end of the semester, with only two weeks left. But, if nothing else, we will have a detailed overview of CLICK, and a good explanation of exactly what needs to be done on both the PC and WARP
+(02:22:02 PM) dpfeil: so, that is a pretty simple set up on our side then. right now we have a google calendar where people can sign up for access to the boards.
+(02:22:46 PM) dpfeil: that is fine, that will definitely be useful. I am not sure if we will have students at Drexel work on it over the summer, or if Shetty will have you pick things back up in the fall
+(02:22:55 PM) hasenov: how will we be able to see what is going on on the actual WARP board?
+(02:23:34 PM) dpfeil: well, that is a good question, though in reality, you dont really see anything happen anyway
+(02:23:56 PM) dpfeil: there is a serial port connected to the warp boards that we use for debugging
+(02:23:58 PM) acrowell105: so, we'd just use wrieshark to watch the packets being sent between PC and WARP, I assume
+(02:24:47 PM) acrowell105: okay, so we would be able to send debug info through the serial port to the remote desktop?
+(02:25:01 PM) dpfeil: you can use the serial port and hyperterm to the WARP boards and have the WARP board output some things for successful reception and all, this is how we have done it in the past
+(02:25:06 PM) dpfeil: yes, exactly
+(02:25:47 PM) dpfeil: So the main thing is that the set up you guys will be using is a bit different than our usual set up, so we need to know in advance when you plan to remote desktop in, so that we can have the boards set up for your application.
+(02:26:21 PM) acrowell105: okay, good. Now, what about compilation? Will we be able to compile onto the board without physically being at the board?
+(02:26:52 PM) acrowell105: or would we need to send you the code and have you compile it?
+(02:26:57 PM) dpfeil: yes, they are programmed via USB, so you just use the impact program, and you will get a prompt that says it was successful or not
+(02:27:40 PM) dpfeil: you should be able to do everything through remote desktop except physically connect the usb, serial, and ether cables for your set up
+(02:27:55 PM) hasenov: by the way, we forgot to mention, is the PC running Windows? We currently have Click setup to use Linux
+(02:28:27 PM) dpfeil: ah yes, this does complicate things a bit
+(02:28:33 PM) dpfeil: yes, we are currently running windows
+(02:28:54 PM) dpfeil: is it possible to run click in windows?
+(02:28:57 PM) hasenov: it is running through libpcap, now I do know that Windows has pcap library but still there is a problem of compilation
+(02:29:26 PM) dpfeil: right, windows has winpcap, but i am sure it would be a pain to transfer it over to get working on linux
+(02:29:34 PM) dpfeil: let me think of something.
+(02:29:43 PM) dpfeil: i guess there is one solution
+(02:29:51 PM) hasenov: we could get around it probably by using cygwin probably
+(02:30:51 PM) dpfeil: basically it is a two computer setup, we could have a linux box hooked up to the ethernet connection to communicate with warp, and then have the serial and usb connected to the windows pc for debugging and programming via remote desktop.
+(02:31:28 PM) dpfeil: setting up a linux box for this purpose seems a bit of a pain, so let me know if we have other options
+(02:34:36 PM) acrowell105: okay, so here are the options
+(02:35:07 PM) acrowell105: jpcap allows us to sniff packets and send packets
+(02:35:42 PM) acrowell105: however, any packet we sniff out with jpcap is also going to be sent to the kernel (or equivalent on windows)
+(02:35:54 PM) acrowell105: so, it will be processed twice by the PC
+(02:36:33 PM) dpfeil: right
+(02:36:39 PM) acrowell105: the advantage of using click is that it allows us to modify the kernel
+(02:36:59 PM) acrowell105: rather than sniffing packets, we're actually inside the kernel getting the packets
+(02:37:17 PM) acrowell105: this isn't possible on Windows, since windows is not open source
+(02:37:42 PM) acrowell105: so, in an embedded system, we would actually want to modify the kernel
+(02:37:57 PM) dpfeil: right, that makes sense
+(02:37:59 PM) acrowell105: because running a packet sniffer on top of the OS on an embedded system is way too much overhead
+(02:39:07 PM) acrowell105: so, the advantage of doing it in click, is that if it is to eventually be ported to an embedded system, there is very little code that would need to be changed
+(02:39:21 PM) dpfeil: right
+(02:39:28 PM) acrowell105: where, if we are to implement it using winpCap, the code would be almost useless on an embedded system
+(02:39:40 PM) dpfeil: that is true
+(02:39:48 PM) acrowell105: though the code we implement on the WARP board, of course, would not change
+(02:40:37 PM) dpfeil: what about a virtual machine. is it possible to run linux using VMWARE and use that to interface with WARP?
+(02:40:52 PM) acrowell105: so, JPCap (java's pcap) is really easy to implement, and so it would not take us long at all to implement PC side
+(02:42:17 PM) hasenov: with a virtual machine, the problem is that it creates a tunnel between the linux OS and the windows OS
+(02:42:39 PM) dpfeil: yeah, true
+(02:42:40 PM) acrowell105: so, the windows "kernel" would still mess with the packets
+(02:42:52 PM) hasenov: so what we are sending out on the Windows side wouldn't be the same as what we are sending out on the linux side of the VM
+(02:43:23 PM) dpfeil: right
+(02:44:24 PM) dpfeil: how easy would it be to port it back from jcap?
+(02:44:27 PM) hasenov: the biggest problem we see is getting linux to work with Xilinx and actually sending code to the warp board
+(02:44:47 PM) acrowell105: maybe it would work, using VMWAre. Definitely not saying it wouldn't. But I have no idea if it would either
+(02:45:03 PM) acrowell105: jpcap is a very abstracted interface
+(02:45:24 PM) dpfeil: well thats why I suggested the 2 pc solutions, one pc connected only through ethernet to send packets to and from the warp board using linux
+(02:45:47 PM) dpfeil: and then the windows pc for remote desktop access to debug, compile, program
+(02:45:58 PM) dpfeil: let me see what I can do to get a linux machine hooked up
+(02:47:01 PM) acrowell105: even if you had a computer you could spare for a bit and just set up dual boot on
+(02:47:14 PM) acrowell105: since we only need it for the next few weeks
+(02:47:26 PM) dpfeil: right
+(02:48:04 PM) acrowell105: and then we just need SSH into the linux box
+(02:48:47 PM) acrowell105: and RD into the windows box
+(02:50:20 PM) dpfeil: right
+(02:50:41 PM) dpfeil: I just sent an email to check to see what our options will be
+(02:50:59 PM) dpfeil: we probably have an old pc sitting around we can throw linux onto. is there a necessary distro needed?
+(02:52:05 PM) hasenov: we don't really care, ubuntu is really easy to setup and fast to setup
+(02:52:15 PM) dpfeil: yes, thats what I was hoping
+(02:52:44 PM) dpfeil: ok, well I will try to get you set up with the linux box as soon as possible.
+(02:52:49 PM) acrowell105: yeah, I use ubuntu 8.10, so that would be fine
+(02:52:50 PM) hasenov: we do need to have CLICK compiled, so please use the latest version
+(02:52:53 PM) dpfeil: you can still use the windows pc only to get started right?
+(02:53:31 PM) acrowell105: well, to get started we'd really need to have the current code
+(02:54:00 PM) acrowell105: I would suggest setting up an SVN repository, if you can
+(02:54:28 PM) dpfeil: yes, i just will try to get this started
+(02:55:08 PM) acrowell105: for now, though, if you can't get a repository set up for a few days or so, is there anyway you could email us the code, maybe?
+(02:55:20 PM) acrowell105: so we can get started immediately
+(02:56:06 PM) dpfeil: unfortunately it is a bit large for that
+(02:56:23 PM) dpfeil: I could throw it on our server maybe and you can download it
+(02:56:31 PM) dpfeil: let me try to get that up before I leave
+(02:56:33 PM) acrowell105: that would work, too
+(02:57:11 PM) hasenov: ok thanks
+(02:57:55 PM) hasenov: for the RD, what times are usually available, and what is the schedule like?
+(02:58:24 PM) acrowell105: you mentioned you were setting up a google calendar for scheduling. is that available, yet?
+(02:58:28 PM) dpfeil: yes
+(02:58:39 PM) dpfeil: do you have gmail accounts so i can invite you?
+(02:58:44 PM) acrowell105: yes
+(02:58:57 PM) acrowell105: acrowell105@gmail.com
+(02:59:06 PM) hasenov: hristo.s.asenov@gmail.com
+(02:59:14 PM) anne: toroodtm@gmail.com
+(03:00:32 PM) dpfeil: ok, you should all now be invited
+(03:00:44 PM) dpfeil: basically, we have 5 nodes
+(03:01:15 PM) dpfeil: you can schedule on here, but also, if you want to use the boards, you need to let myself know as soon as possible so I can make sure someone sets it up for you
+(03:01:29 PM) dpfeil: the IP address is 129.25.30.40
+(03:01:39 PM) acrowell105: for RD?
+(03:01:45 PM) dpfeil: yes
+(03:01:48 PM) acrowell105: okay
+(03:01:52 PM) dpfeil: I am setting up an account for you now
+(03:02:23 PM) dpfeil: is one account fine?
+(03:02:30 PM) dpfeil: or do you need individual accounts?
+(03:02:42 PM) acrowell105: one account is fine
+(03:04:14 PM) dpfeil: ok, so the account is "rowan" and the password is "dwsl", please change it as soon as you log in (it should prompt you)
+(03:04:19 PM) hasenov: ok, we need to go since we have class
+(03:04:25 PM) dpfeil: ok, that is fine.
+(03:04:34 PM) dpfeil: I will keep you informed about the set up
+(03:04:40 PM) hasenov: andrew will be here for a bit, he will be able to get all the details
+(03:04:45 PM) dpfeil: ok
+(03:04:56 PM) hasenov: thanks, later
+(03:05:00 PM) hasenov left the room (quit: "leaving").
+(03:05:22 PM) dpfeil: so I am in the process of finding out the location of the latest code
+(03:05:30 PM) dpfeil: once I get that I will email you all
+(03:05:32 PM) anne: have a good one   nice meeting you
+(03:05:38 PM) dpfeil: you too
+(03:06:07 PM) dpfeil: andrew, do you have any questions
+(03:06:48 PM) acrowell105: uhh, let's see
+(03:06:58 PM) dpfeil: oh, i forgot to mention. you do not need to schedule remote desktop access, only schedule if you need to use boards
+(03:07:17 PM) acrowell105: okay, but can't only one user log in to RD at a time?
+(03:07:24 PM) dpfeil: no, unlimited
+(03:07:32 PM) dpfeil: or, well, there is not a hard limit
+(03:07:50 PM) acrowell105: oh, okay, are you running the default windows RD or you have another program?
+(03:08:00 PM) dpfeil: its XP, but we cracked the registry to allow multiple connections
+(03:08:06 PM) acrowell105: ohh, cool
+(03:08:23 PM) dpfeil: just make sure you log off after you are done so that it frees up any resources you are using
+(03:09:27 PM) acrowell105: which port are you using?
+(03:09:54 PM) dpfeil: um, its the regular remote desktop app, i dont believe you need to specify a port
+(03:10:52 PM) acrowell105: okay, trying to connect right now, and it's not letting me, but I'm using ubuntu's RD program. It's connecting to port 5900, I thought maybe I need to specify a different port
+(03:11:00 PM) acrowell105: otherwise, i just need to use window's RD
+(03:11:03 PM) dpfeil: ahh
+(03:11:09 PM) dpfeil: yes, 5900 is usally vnc
+(03:11:35 PM) anne1 [n=df@dhcp-arubawireless-214-94.rowan.edu] entered the room.
+(03:11:50 PM) acrowell105: ah, windows uses 3389
+(03:11:57 PM) dpfeil: i think it is a different protocol, i am not sure if you can use ubuntu's program or not
+(03:12:00 PM) dpfeil: does it work?
+(03:12:27 PM) acrowell105: well, I'm connected at least. Not seeing anything, but it's probably just ubuntu's issue
+(03:12:38 PM) dpfeil: haha, alright.
+(03:12:58 PM) anne left the room (quit: Read error: 104 (Connection reset by peer)).
+(03:13:22 PM) dpfeil: well, i will look into finding the most recent code, setting up svn, and getting a linux machine for testing.
+(03:13:33 PM) dpfeil: I will keep all of you informed via email
+(03:13:37 PM) acrowell105: okay, so, i think that's it for now. Just email us a link when you get the code up online
+(03:13:42 PM) acrowell105: alright, sounds good
+(03:13:47 PM) dpfeil: sure thing.
+(03:14:01 PM) acrowell105: was good talking to you, thanks a lot for answering all the questions
+(03:14:20 PM) dpfeil: you are welcome, good luck with the project and the rest of your term
+(03:14:21 PM) dpfeil: bye
+(03:14:28 PM) acrowell105: thank, bye
+(03:14:31 PM) acrowell105: *thanks
