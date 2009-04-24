@@ -19,6 +19,30 @@ WarpInput::simple_action(Packet *p)
 }
 
 
+Packet *
+WarpInput::make_packet()
+{
+    WritablePacket *p = Packet::make(WarpInput::staticString->data(), WarpInput::staticString->length());
+
+    int i;  
+    char *d = (char *) p->data();
+    for (i = 0; i < 5; i += sizeof(int))
+        *(int*)(d + i) = click_random();
+    for( ; i < 5; i++)
+        *(d + i) = click_random();
+
+    p->timestamp_anno().set_now();
+    return p;
+}
+
+bool
+WarpInput::run_task(Task *)
+{
+  Packet *p = make_packet();
+  output(0).push(p);
+  return true;
+}
+
 void
 WarpInput::add_handlers()
 {
@@ -29,43 +53,12 @@ WarpInput::add_handlers()
 int
 WarpInput::test_fnct(const String &s, Element *e, void *vparam, ErrorHandler *errh)
 {
+  staticString = new String(s.data());
+  Packet *packet = Packet::make(s.data(), s.length());
   click_chatter("%s", s.c_str());
   return 0;
 }
 
-PushWarpInput::PushWarpInput()
-{
-}
-
-PushWarpInput::~PushWarpInput()
-{
-}
-
-void
-PushWarpInput::push(int, Packet *p)
-{
-  output(0).push(p);
-}
-
-PullWarpInput::PullWarpInput()
-{
-}
-
-PullWarpInput::~PullWarpInput()
-{
-}
-
-Packet *
-PullWarpInput::pull(int)
-{
-  return input(0).pull();
-}
-
-
 CLICK_ENDDECLS
 EXPORT_ELEMENT(WarpInput)
-EXPORT_ELEMENT(PushWarpInput)
-EXPORT_ELEMENT(PullWarpInput)
 ELEMENT_MT_SAFE(WarpInput)
-ELEMENT_MT_SAFE(PushWarpInput)
-ELEMENT_MT_SAFE(PullWarpInput)
