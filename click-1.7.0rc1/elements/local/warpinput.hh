@@ -35,45 +35,5 @@ Responds to each pushed packet by pushing it unchanged out its first output.
 Null, PullNull
 */
 
-class PushWarpInput : public Element { public:
-
-  PushWarpInput();
-  ~PushWarpInput();
-
-  const char *class_name() const	{ return "PushWarpInput"; }
-  const char *port_count() const	{ return PORTS_1_1; }
-  const char *processing() const	{ return PUSH; }
-
-  void push(int, Packet *);
-
-};
-
-/*
-=c
-PullNull
-
-=s basictransfer
-passes packets unchanged
-
-=d
-Responds to each pull request by pulling a packet from its input and returning
-that packet unchanged.
-
-=a
-Null, PushNull */
-
-class PullWarpInput : public Element { public:
-
-  PullWarpInput();
-  ~PullWarpInput();
-
-  const char *class_name() const	{ return "PullWarpInput"; }
-  const char *port_count() const	{ return PORTS_1_1; }
-  const char *processing() const	{ return PULL; }
-
-  Packet *pull(int);
-
-};
-
 CLICK_ENDDECLS
 #endif
