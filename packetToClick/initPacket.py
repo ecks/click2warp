@@ -8,7 +8,7 @@ class PacketToClick(asyncore.dispatcher):
         asyncore.dispatcher.__init__(self)
         self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
         self.connect((host, port))
-	self.buffer = "31323334"
+	self.buffer = "a1"
 	self.buffer = self.buffer.decode("hex")
 
     def writable(self):
