@@ -3,7 +3,7 @@
 //sock :: Socket(TCP, 0.0.0.0, 7777) 
 //todev :: ToDevice(eth1)
 
-Socket(TCP, 0.0.0.0, 7777)
+Socket(TCP, 0.0.0.0, 7777, HEADROOM 34)
    -> Print("From Socket: ")
    -> IPEncap(8, 150.250.190.119, 150.250.190.219)
    -> Print("From IP: ")
