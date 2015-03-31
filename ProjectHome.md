@@ -1,0 +1,1 @@
+A CLICK module implementation to emulate control communications between a laptop (host) and a WARP board. We did not have access to the WARP board, so both sides are emulated on the laptop.
